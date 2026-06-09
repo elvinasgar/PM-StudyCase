@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM Study Cases — Project Management Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════ TOKENS ═══════════ */
+:root {
+  --ink:    #0b0e14;
+  --ink2:   #111520;
+  --ink3:   #161c2c;
+  --line:   rgba(255,255,255,0.055);
+  --dim:    #2a3350;
+  --mute:   #4e5e80;
+  --soft:   #8899bb;
+  --body:   #c8d4ee;
+  --bright: #eef2ff;
+  --a:      #4af4c8;   /* teal accent */
+  --b:      #f4914a;   /* amber */
+  --c:      #a78bfa;   /* violet */
+  --d:      #f06c6c;   /* red */
+  --e:      #60d4ff;   /* sky */
+  --ga: rgba(74,244,200,0.08);
+  --gb: rgba(244,145,74,0.08);
+  --gc: rgba(167,139,250,0.08);
+}
+
+/* ═══════════ RESET ═══════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  background:var(--ink);
+  color:var(--body);
+  font-family:'Familjen Grotesk',sans-serif;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:var(--a);}
+
+/* ═══════════ CURSOR ═══════════ */
+#csr{position:fixed;width:6px;height:6px;background:var(--a);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
+#csr-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(74,244,200,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease-out;}
+
+/* ═══════════ NAV ═══════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+  background:rgba(11,14,20,.9);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--line);
+}
+.n-brand{
+  font-family:'Fragment Mono',monospace;
+  font-size:.75rem;letter-spacing:1px;
+  color:var(--a);display:flex;align-items:center;gap:10px;
+}
+.n-brand::before{content:'▸';font-size:.65rem;}
+.n-links{display:flex;gap:28px;}
+.n-links a{
+  font-family:'Fragment Mono',monospace;
+  font-size:.58rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mute);transition:color .2s;
+}
+.n-links a:hover{color:var(--a);}
+.n-count{
+  font-family:'Fragment Mono',monospace;
+  font-size:.58rem;letter-spacing:2px;color:var(--dim);
+  display:flex;align-items:center;gap:6px;
+}
+.n-count .dot{width:5px;height:5px;border-radius:50%;background:var(--a);animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.n-mob{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.n-mob span{width:20px;height:1.5px;background:var(--mute);display:block;}
+.mob-menu{
+  display:none;position:fixed;inset:0;background:rgba(11,14,20,.97);
+  backdrop-filter:blur(20px);z-index:499;
+  flex-direction:column;align-items:center;justify-content:center;gap:28px;
+}
+.mob-menu.open{display:flex;}
+.mob-menu a{font-family:'Fragment Mono',monospace;font-size:1.2rem;letter-spacing:4px;text-transform:uppercase;color:var(--mute);}
+.mob-menu a:hover{color:var(--a);}
+.mob-x{position:absolute;top:20px;right:24px;font-size:1.2rem;color:var(--mute);background:none;border:none;cursor:pointer;}
+
+/* ═══════════ HERO ═══════════ */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:80px 5% 60px;
+  text-align:center;
+}
+#hero-cv{position:absolute;inset:0;z-index:0;}
+
+.hero-wrap{position:relative;z-index:1;max-width:860px;}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Fragment Mono',monospace;
+  font-size:.58rem;letter-spacing:4px;text-transform:uppercase;
+  border:1px solid rgba(74,244,200,.2);
+  padding:7px 16px;color:var(--a);
+  background:rgba(74,244,200,.05);
+  margin-bottom:36px;
+  animation:fadeUp .6s ease .1s both;
+}
+.hero-badge::before{content:'◈ ';font-size:.5rem;}
+
+.hero-title{
+  font-family:'Familjen Grotesk',sans-serif;
+  font-size:clamp(3rem,8vw,7rem);
+  font-weight:700;line-height:.95;letter-spacing:-2px;
+  margin-bottom:24px;
+  animation:fadeUp .6s ease .25s both;
+}
+.hero-title .line-a{display:block;color:var(--bright);}
+.hero-title .line-b{
+  display:block;
+  background:linear-gradient(90deg,var(--a) 0%,var(--c) 50%,var(--b) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:200%;animation:grad 5s ease infinite;
+}
+@keyframes grad{0%,100%{background-position:0%}50%{background-position:100%}}
+
+.hero-sub{
+  font-family:'Fragment Mono',monospace;
+  font-size:.72rem;letter-spacing:2px;
+  color:var(--mute);margin-bottom:48px;line-height:1.8;
+  animation:fadeUp .6s ease .4s both;
+}
+.hero-sub em{color:var(--a);font-style:normal;}
+
+/* Hero stats strip */
+.hero-strip{
+  display:flex;justify-content:center;gap:0;
+  border:1px solid var(--line);overflow:hidden;
+  max-width:600px;margin:0 auto 48px;
+  animation:fadeUp .6s ease .55s both;
+}
+.hs-item{
+  flex:1;padding:16px 12px;text-align:center;
+  border-right:1px solid var(--line);
+  transition:background .25s;
+}
+.hs-item:last-child{border-right:none;}
+.hs-item:hover{background:var(--ga);}
+.hs-n{
+  font-family:'Familjen Grotesk',sans-serif;
+  font-size:1.6rem;font-weight:700;color:var(--a);line-height:1;
+}
+.hs-l{font-family:'Fragment Mono',monospace;font-size:.48rem;letter-spacing:2px;color:var(--mute);margin-top:4px;}
+
+.hero-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'Fragment Mono',monospace;
+  font-size:.65rem;letter-spacing:3px;text-transform:uppercase;
+  padding:14px 36px;
+  border:1px solid var(--a);color:var(--a);
+  background:rgba(74,244,200,.06);
+  transition:all .25s;
+  animation:fadeUp .6s ease .7s both;
+}
+.hero-btn:hover{background:var(--a);color:var(--ink);transform:translateY(-2px);}
+.hero-btn::after{content:'↓';transition:transform .2s;}
+.hero-btn:hover::after{transform:translateY(3px);}
+
+/* Scroll line */
+.scroll-ind{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.si-text{font-family:'Fragment Mono',monospace;font-size:.45rem;letter-spacing:4px;color:var(--dim);}
+.si-line{width:1px;height:40px;background:linear-gradient(var(--a),transparent);animation:sp 2s ease infinite;}
+@keyframes sp{0%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(.3) translateY(10px)}}
+
+/* ═══════════ SECTION BASE ═══════════ */
+section{padding:100px 5%;}
+.sw{max-width:1280px;margin:0 auto;}
+.s-tag{
+  font-family:'Fragment Mono',monospace;
+  font-size:.55rem;letter-spacing:5px;color:var(--a);
+  text-transform:uppercase;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.s-tag::before{content:'//';color:rgba(74,244,200,.3);}
+.s-title{
+  font-family:'Familjen Grotesk',sans-serif;
+  font-size:clamp(2rem,4.5vw,3.5rem);
+  font-weight:700;letter-spacing:-1px;line-height:1.05;
+  margin-bottom:56px;
+  color:var(--bright);
+}
+.s-title .ca{color:var(--a);}
+.s-title .cb{color:var(--b);}
+.s-title .cc{color:var(--c);}
+.s-title .cd{color:var(--d);}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease;}
+.rv.on{opacity:1;transform:none;}
+.rv.d1{transition-delay:.08s;}.rv.d2{transition-delay:.16s;}.rv.d3{transition-delay:.24s;}.rv.d4{transition-delay:.32s;}.rv.d5{transition-delay:.4s;}
+
+/* ═══════════ OVERVIEW CARDS ═══════════ */
+#overview{background:var(--ink2);}
+.ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.ov-card{
+  border:1px solid var(--line);padding:28px 22px;
+  background:rgba(255,255,255,.015);
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.ov-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  transform:scaleX(0);transform-origin:left;transition:transform .4s;
+}
+.ov-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12);}
+.ov-card:hover::after{transform:scaleX(1);}
+.ov-card.ta::after{background:var(--a);}
+.ov-card.tb::after{background:var(--b);}
+.ov-card.tc::after{background:var(--c);}
+.ov-card.td::after{background:var(--d);}
+.ov-card:hover.ta{background:var(--ga);}
+.ov-card:hover.tb{background:var(--gb);}
+.ov-card:hover.tc{background:var(--gc);}
+.ov-icon{font-size:1.6rem;margin-bottom:14px;display:block;}
+.ov-name{font-size:1rem;font-weight:600;color:var(--bright);margin-bottom:6px;}
+.ov-desc{font-size:.78rem;color:var(--mute);line-height:1.55;}
+
+/* ═══════════ STUDY CASES ═══════════ */
+.case-wrap{display:flex;flex-direction:column;gap:40px;}
+
+.case-block{
+  border:1px solid var(--line);overflow:hidden;
+  background:rgba(255,255,255,.012);
+  transition:border-color .3s;
+}
+.case-block:hover{border-color:rgba(74,244,200,.18);}
+
+/* Header bar */
+.cb-head{
+  display:flex;align-items:stretch;
+  border-bottom:1px solid var(--line);
+}
+.cb-num{
+  padding:20px 28px;
+  border-right:1px solid var(--line);
+  font-family:'Fragment Mono',monospace;
+  font-size:2.5rem;font-weight:400;
+  color:rgba(74,244,200,.12);
+  display:flex;align-items:center;min-width:90px;justify-content:center;
+  line-height:1;
+}
+.cb-meta{padding:20px 28px;flex:1;}
+.cb-sector{
+  font-family:'Fragment Mono',monospace;
+  font-size:.5rem;letter-spacing:4px;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.cb-name{font-size:1.35rem;font-weight:700;color:var(--bright);letter-spacing:-.5px;}
+.cb-sub{font-size:.78rem;color:var(--mute);margin-top:3px;}
+.cb-status{
+  display:flex;align-items:center;
+  padding:20px 28px;
+  border-left:1px solid var(--line);
+  gap:16px;flex-wrap:wrap;
+}
+.tag{
+  font-family:'Fragment Mono',monospace;
+  font-size:.5rem;letter-spacing:2px;text-transform:uppercase;
+  padding:5px 10px;border-radius:0;
+  border:1px solid;
+}
+.tag-a{border-color:rgba(74,244,200,.3);color:var(--a);background:rgba(74,244,200,.06);}
+.tag-b{border-color:rgba(244,145,74,.3);color:var(--b);background:rgba(244,145,74,.06);}
+.tag-c{border-color:rgba(167,139,250,.3);color:var(--c);background:rgba(167,139,250,.06);}
+.tag-d{border-color:rgba(240,108,108,.3);color:var(--d);background:rgba(240,108,108,.06);}
+.tag-e{border-color:rgba(96,212,255,.3);color:var(--e);background:rgba(96,212,255,.06);}
+
+/* Body */
+.cb-body{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);}
+.cb-col{padding:28px;border-right:1px solid var(--line);}
+.cb-col:last-child{border-right:none;}
+.cb-col-title{
+  font-family:'Fragment Mono',monospace;
+  font-size:.5rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--mute);margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1px solid var(--line);
+}
+.cb-text{font-size:.85rem;line-height:1.75;color:var(--soft);}
+.cb-text strong{color:var(--bright);}
+
+/* KPI row */
+.kpi-row{display:flex;gap:0;border-top:1px solid var(--line);}
+.kpi{
+  flex:1;padding:18px 20px;text-align:center;
+  border-right:1px solid var(--line);transition:background .25s;
+}
+.kpi:last-child{border-right:none;}
+.kpi:hover{background:rgba(74,244,200,.04);}
+.kpi-val{
+  font-family:'Familjen Grotesk',sans-serif;
+  font-size:1.4rem;font-weight:700;
+  line-height:1;margin-bottom:4px;
+}
+.kpi-lbl{font-family:'Fragment Mono',monospace;font-size:.48rem;letter-spacing:2px;color:var(--mute);}
+
+/* Lessons */
+.lessons{padding:24px 28px;border-top:1px solid var(--line);background:rgba(0,0,0,.15);}
+.lessons-title{
+  font-family:'Fragment Mono',monospace;
+  font-size:.5rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--a);margin-bottom:12px;
+}
+.lesson-list{display:flex;flex-wrap:wrap;gap:8px;}
+.lesson{
+  font-family:'Fragment Mono',monospace;
+  font-size:.58rem;letter-spacing:1px;
+  padding:5px 12px;background:rgba(74,244,200,.05);
+  border:1px solid rgba(74,244,200,.15);color:var(--soft);
+  transition:all .2s;cursor:default;
+}
+.lesson:hover{background:rgba(74,244,200,.1);color:var(--a);}
+
+/* Tools used */
+.tools-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.tool-chip{
+  font-family:'Fragment Mono',monospace;
+  font-size:.55rem;letter-spacing:1px;
+  padding:4px 10px;
+  border:1px solid var(--line);
+  color:var(--mute);transition:all .2s;
+}
+.tool-chip:hover{border-color:var(--c);color:var(--c);}
+
+/* ═══════════ FRAMEWORKS ═══════════ */
+#frameworks{background:var(--ink3);}
+.fw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.fw-card{
+  border:1px solid var(--line);padding:28px 24px;
+  background:rgba(255,255,255,.015);
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.fw-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--fw-bg,transparent);
+  opacity:0;transition:opacity .3s;
+}
+.fw-card:hover::before{opacity:1;}
+.fw-card:hover{transform:translateY(-4px);border-color:var(--fw-c,var(--a));}
+.fw-name{
+  font-size:1.1rem;font-weight:700;color:var(--bright);
+  margin-bottom:4px;position:relative;z-index:1;
+}
+.fw-full{
+  font-family:'Fragment Mono',monospace;
+  font-size:.52rem;letter-spacing:2px;color:var(--mute);
+  margin-bottom:14px;position:relative;z-index:1;
+}
+.fw-desc{font-size:.8rem;color:var(--soft);line-height:1.6;margin-bottom:16px;position:relative;z-index:1;}
+.fw-tags{display:flex;flex-wrap:wrap;gap:6px;position:relative;z-index:1;}
+
+/* ═══════════ METRICS ═══════════ */
+#metrics{background:var(--ink2);}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.metric-block{
+  border:1px solid var(--line);padding:32px;
+  background:rgba(255,255,255,.015);
+}
+.mb-title{font-size:1rem;font-weight:600;color:var(--bright);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.mb-title::before{content:'';width:4px;height:16px;background:var(--a);display:block;}
+.mb-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.mb-label{font-family:'Fragment Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--mute);min-width:120px;}
+.mb-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.06);}
+.mb-bar{height:100%;background:linear-gradient(90deg,var(--a),var(--c));transform:scaleX(0);transform-origin:left;transition:transform 1.2s cubic-bezier(.16,1,.3,1);}
+.mb-bar.on{transform:scaleX(1);}
+.mb-val{font-family:'Fragment Mono',monospace;font-size:.6rem;color:var(--a);min-width:36px;text-align:right;}
+
+/* formula */
+.formula-wrap{margin-top:24px;}
+.formula{
+  font-family:'Fragment Mono',monospace;
+  font-size:.72rem;letter-spacing:1px;
+  color:var(--a);background:rgba(74,244,200,.05);
+  border:1px solid rgba(74,244,200,.15);
+  padding:14px 18px;line-height:1.8;
+}
+.formula .op{color:var(--mute);}
+.formula .var{color:var(--c);}
+.formula .val{color:var(--b);}
+
+/* ═══════════ GLOSSARY ═══════════ */
+#glossary{background:var(--ink3);}
+.gl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gl-card{
+  border:1px solid var(--line);padding:20px 18px;
+  background:rgba(255,255,255,.01);
+  transition:all .25s;
+}
+.gl-card:hover{border-color:rgba(74,244,200,.2);background:var(--ga);transform:translateX(4px);}
+.gl-abbr{
+  font-family:'Familjen Grotesk',sans-serif;
+  font-size:1.3rem;font-weight:700;color:var(--a);margin-bottom:4px;
+  letter-spacing:-1px;
+}
+.gl-name{font-size:.78rem;font-weight:600;color:var(--bright);margin-bottom:6px;}
+.gl-def{font-size:.7rem;color:var(--mute);line-height:1.5;}
+
+/* ═══════════ CTA ═══════════ */
+#cta{
+  background:var(--ink);
+  border-top:1px solid var(--line);
+  text-align:center;padding:100px 5%;
+  position:relative;overflow:hidden;
+}
+#cta::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(74,244,200,.06) 0%,transparent 60%);
+}
+#cta::after{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(74,244,200,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(74,244,200,.03) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.cta-inner{position:relative;z-index:1;}
+.cta-mono{
+  font-family:'Fragment Mono',monospace;
+  font-size:.6rem;letter-spacing:6px;color:var(--a);
+  display:block;margin-bottom:20px;
+}
+.cta-title{
+  font-family:'Familjen Grotesk',sans-serif;
+  font-size:clamp(2.5rem,6vw,5.5rem);
+  font-weight:700;letter-spacing:-2px;line-height:.95;
+  color:var(--bright);margin-bottom:20px;
+}
+.cta-sub{font-size:.9rem;color:var(--mute);margin-bottom:40px;font-family:'Fragment Mono',monospace;letter-spacing:1px;}
+.cta-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.cta-btn{
+  font-family:'Fragment Mono',monospace;
+  font-size:.6rem;letter-spacing:3px;text-transform:uppercase;
+  padding:13px 28px;border:1px solid;
+  transition:all .25s;display:inline-flex;align-items:center;gap:8px;
+}
+.cta-btn.primary{border-color:var(--a);color:var(--a);background:rgba(74,244,200,.06);}
+.cta-btn.primary:hover{background:var(--a);color:var(--ink);}
+.cta-btn.sec{border-color:var(--line);color:var(--mute);}
+.cta-btn.sec:hover{border-color:var(--c);color:var(--c);}
+
+/* ═══════════ FOOTER ═══════════ */
+footer{
+  background:var(--ink);border-top:1px solid var(--line);
+  padding:28px 5%;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.f-brand{font-family:'Fragment Mono',monospace;font-size:.6rem;letter-spacing:3px;color:var(--dim);}
+.f-note{font-family:'Fragment Mono',monospace;font-size:.52rem;letter-spacing:2px;color:rgba(74,85,104,.4);text-align:center;}
+.f-links{display:flex;gap:20px;}
+.f-links a{font-family:'Fragment Mono',monospace;font-size:.52rem;letter-spacing:2px;color:var(--dim);transition:color .2s;}
+.f-links a:hover{color:var(--a);}
+
+/* ═══════════ ANIMATIONS ═══════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:1024px){
+  .ov-grid{grid-template-columns:repeat(2,1fr);}
+  .fw-grid{grid-template-columns:repeat(2,1fr);}
+  .gl-grid{grid-template-columns:repeat(2,1fr);}
+  .cb-body{grid-template-columns:1fr;}
+  .cb-col{border-right:none;border-bottom:1px solid var(--line);}
+  .cb-col:last-child{border-bottom:none;}
+  .metrics-grid{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  nav{padding:0 4%;}
+  .n-links{display:none;}
+  .n-count{display:none;}
+  .n-mob{display:flex;}
+  section{padding:80px 4%;}
+  .ov-grid{grid-template-columns:1fr 1fr;}
+  .fw-grid{grid-template-columns:1fr;}
+  .gl-grid{grid-template-columns:repeat(2,1fr);}
+  .cb-head{flex-direction:column;}
+  .cb-status{border-left:none;border-top:1px solid var(--line);}
+  .kpi-row{flex-wrap:wrap;}
+  footer{flex-direction:column;text-align:center;}
+}
+@media(max-width:480px){
+  .ov-grid{grid-template-columns:1fr;}
+  .gl-grid{grid-template-columns:1fr;}
+  .hero-strip{flex-direction:column;}
+  .hs-item{border-right:none;border-bottom:1px solid var(--line);}
+  .hs-item:last-child{border-bottom:none;}
+  .hero-title{font-size:2.8rem;}
+}
+</style>
+</head>
+<body>
+
+<div id="csr"></div>
+<div id="csr-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="n-brand">PM STUDY CASES</div>
+  <div class="n-links">
+    <a href="#overview">Overview</a>
+    <a href="#cases">Cases</a>
+    <a href="#frameworks">Frameworks</a>
+    <a href="#metrics">Metrics</a>
+    <a href="#glossary">Glossary</a>
+  </div>
+  <div class="n-count"><span class="dot"></span>6 CASE STUDIES</div>
+  <div class="n-mob" onclick="document.getElementById('mmenu').classList.add('open')"><span></span><span></span><span></span></div>
+</nav>
+<div class="mob-menu" id="mmenu">
+  <button class="mob-x" onclick="document.getElementById('mmenu').classList.remove('open')">✕</button>
+  <a href="#overview" onclick="document.getElementById('mmenu').classList.remove('open')">Overview</a>
+  <a href="#cases" onclick="document.getElementById('mmenu').classList.remove('open')">Cases</a>
+  <a href="#frameworks" onclick="document.getElementById('mmenu').classList.remove('open')">Frameworks</a>
+  <a href="#metrics" onclick="document.getElementById('mmenu').classList.remove('open')">Metrics</a>
+  <a href="#glossary" onclick="document.getElementById('mmenu').classList.remove('open')">Glossary</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-cv"></canvas>
+  <div class="hero-wrap">
+    <div class="hero-badge">Project Management Intelligence Hub</div>
+    <h1 class="hero-title">
+      <span class="line-a">PM Study</span>
+      <span class="line-b">Cases</span>
+    </h1>
+    <div class="hero-sub">
+      Real-world project management analysis across <em>construction</em>, <em>infrastructure</em>,<br>
+      <em>technology</em> and <em>mega-projects</em> — failures, recoveries and lessons.
+    </div>
+    <div class="hero-strip">
+      <div class="hs-item"><div class="hs-n">6</div><div class="hs-l">Case Studies</div></div>
+      <div class="hs-item"><div class="hs-n">$2T+</div><div class="hs-l">Project Value</div></div>
+      <div class="hs-item"><div class="hs-n">12+</div><div class="hs-l">PM Frameworks</div></div>
+      <div class="hs-item"><div class="hs-n">40+</div><div class="hs-l">Key Lessons</div></div>
+    </div>
+    <a href="#cases" class="hero-btn">Explore Cases</a>
+  </div>
+  <div class="scroll-ind"><span class="si-text">SCROLL</span><div class="si-line"></div></div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="sw">
+    <div class="s-tag rv">01 — Overview</div>
+    <h2 class="s-title rv">Why PM <span class="ca">Case Studies</span> Matter</h2>
+    <div class="ov-grid">
+      <div class="ov-card ta gc rv">
+        <span class="ov-icon">📊</span>
+        <div class="ov-name">Real Data</div>
+        <div class="ov-desc">Actual project metrics, cost overruns, schedule delays and scope changes from executed projects worldwide.</div>
+      </div>
+      <div class="ov-card tb gc rv d1">
+        <span class="ov-icon">⚠️</span>
+        <div class="ov-name">Failure Analysis</div>
+        <div class="ov-desc">Root-cause analysis of project failures — poor risk management, scope creep, stakeholder misalignment.</div>
+      </div>
+      <div class="ov-card tc gc rv d2">
+        <span class="ov-icon">🔄</span>
+        <div class="ov-name">Recovery Tactics</div>
+        <div class="ov-desc">How project teams recovered from critical delays, budget overruns and contract disputes in real scenarios.</div>
+      </div>
+      <div class="ov-card td gc rv d3">
+        <span class="ov-icon">📐</span>
+        <div class="ov-name">Transferable Lessons</div>
+        <div class="ov-desc">Applicable frameworks and lessons extracted from each case, mapped to PM standards and methodologies.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section id="cases" style="background:var(--ink2);">
+  <div class="sw">
+    <div class="s-tag rv">02 — Case Studies</div>
+    <h2 class="s-title rv">Deep-Dive <span class="cb">Analysis</span></h2>
+
+    <div class="case-wrap">
+
+<!-- ─── CASE 01: BERLIN AIRPORT ─── -->
+<div class="case-block rv">
+  <div class="cb-head">
+    <div class="cb-num" style="color:rgba(240,108,108,.15)">01</div>
+    <div class="cb-meta">
+      <div class="cb-sector" style="color:var(--d)">Infrastructure · Aviation · Germany</div>
+      <div class="cb-name">Berlin Brandenburg Airport (BER)</div>
+      <div class="cb-sub">2006–2020 · €7.3B · 9-year delay · Project Management Failure</div>
+    </div>
+    <div class="cb-status">
+      <span class="tag tag-d">DELAYED</span>
+      <span class="tag tag-b">OVER BUDGET</span>
+      <span class="tag tag-a">COMPLETED</span>
+    </div>
+  </div>
+  <div class="cb-body">
+    <div class="cb-col">
+      <div class="cb-col-title">Background & Scope</div>
+      <div class="cb-text">Berlin's new international airport was planned to open in <strong>2011</strong> but finally opened in <strong>2020</strong> — nearly 9 years late. Originally budgeted at €2.8B, final cost reached <strong>€7.3B</strong>. The airport was designed to consolidate three Berlin airports into one world-class hub serving 30M+ passengers annually.<br><br>The project involved complex systems integration: fire safety, terminal design, baggage handling, and rail connections — all managed under fragmented contracts with <strong>poor integration management</strong>.</div>
+    </div>
+    <div class="cb-col">
+      <div class="cb-col-title">Root Cause Analysis</div>
+      <div class="cb-text"><strong>1. Fire Safety System Failure:</strong> The fire suppression and smoke extraction system did not meet safety codes, requiring complete redesign.<br><br><strong>2. Poor Governance:</strong> Politicians sat on the supervisory board without PM expertise. No experienced Program Director was appointed.<br><br><strong>3. Design Changes During Construction:</strong> Over 65,000 design change orders were issued mid-construction.<br><br><strong>4. Contractor Fragmentation:</strong> 60+ subcontractors with no integrated management system or single point of accountability.</div>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">€7.3B</div><div class="kpi-lbl">Final Cost</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">+161%</div><div class="kpi-lbl">Budget Overrun</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">9 Years</div><div class="kpi-lbl">Delay</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--b)">65,000+</div><div class="kpi-lbl">Change Orders</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">2020</div><div class="kpi-lbl">Opening Year</div></div>
+  </div>
+  <div class="lessons">
+    <div class="lessons-title">Key Lessons Learned</div>
+    <div class="lesson-list">
+      <span class="lesson">Appoint experienced Program Director</span>
+      <span class="lesson">Freeze design before construction</span>
+      <span class="lesson">Integrated contract management</span>
+      <span class="lesson">Independent audits at each phase gate</span>
+      <span class="lesson">Separate governance from politics</span>
+      <span class="lesson">Systems integration testing early</span>
+    </div>
+    <div class="tools-row">
+      <span class="tool-chip">Earned Value Management</span>
+      <span class="tool-chip">Risk Register</span>
+      <span class="tool-chip">Change Control Board</span>
+      <span class="tool-chip">PRINCE2</span>
+      <span class="tool-chip">Primavera P6</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CASE 02: CROSSRAIL ─── -->
+<div class="case-block rv">
+  <div class="cb-head">
+    <div class="cb-num" style="color:rgba(74,244,200,.1)">02</div>
+    <div class="cb-meta">
+      <div class="cb-sector" style="color:var(--a)">Rail Infrastructure · UK</div>
+      <div class="cb-name">Crossrail — Elizabeth Line</div>
+      <div class="cb-sub">2009–2022 · £18.9B · Complex urban mega-project</div>
+    </div>
+    <div class="cb-status">
+      <span class="tag tag-a">COMPLETED</span>
+      <span class="tag tag-b">OVERRUN</span>
+      <span class="tag tag-e">BIM DELIVERED</span>
+    </div>
+  </div>
+  <div class="cb-body">
+    <div class="cb-col">
+      <div class="cb-col-title">Background & Scope</div>
+      <div class="cb-text">Crossrail is a <strong>118km</strong> east-west rail line through London, including 42km of new tunnels under the city. With 41 stations, 10 new or rebuilt, it is Europe's largest infrastructure project. The project involved <strong>TBM tunneling</strong>, complex station fit-out, rail systems integration, and operations under a live city.<br><br>Cross-functional teams from 1,000+ companies. Peak workforce of <strong>10,000 workers</strong>. Managed through a single delivery authority — Crossrail Ltd — under NEC3 contract framework.</div>
+    </div>
+    <div class="cb-col">
+      <div class="cb-col-title">PM Challenges & Solutions</div>
+      <div class="cb-text"><strong>1. Systems Integration Delay (2018):</strong> Signaling, rolling stock, and fit-out integration caused a 3-year delay. Solution: Created an independent systems integration testing program.<br><br><strong>2. Supply Chain Complexity:</strong> 1,000+ contracts managed through NEC3 with clear early warning systems and pain/gain sharing.<br><br><strong>3. Safety in Live City:</strong> 26M+ working hours with zero fatal accidents. HSE Plan updated daily. Behavior-based safety program deployed.<br><br><strong>4. BIM Level 2:</strong> Full BIM implementation across all assets, enabling digital handover.</div>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">118km</div><div class="kpi-lbl">Route Length</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">£18.9B</div><div class="kpi-lbl">Final Cost</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--b)">3 Years</div><div class="kpi-lbl">Systems Delay</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">26M+</div><div class="kpi-lbl">Safe Working Hours</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">Zero</div><div class="kpi-lbl">Fatal Accidents</div></div>
+  </div>
+  <div class="lessons">
+    <div class="lessons-title">Key Lessons Learned</div>
+    <div class="lesson-list">
+      <span class="lesson">Systems integration must be planned early</span>
+      <span class="lesson">NEC3 early warning mechanism saves time</span>
+      <span class="lesson">BIM Level 2 enables digital handover</span>
+      <span class="lesson">Single delivery authority reduces friction</span>
+      <span class="lesson">Behavior-based safety culture</span>
+      <span class="lesson">Supply chain pain/gain sharing</span>
+    </div>
+    <div class="tools-row">
+      <span class="tool-chip">NEC3 Contract</span>
+      <span class="tool-chip">BIM Level 2</span>
+      <span class="tool-chip">Primavera P6</span>
+      <span class="tool-chip">Risk Management</span>
+      <span class="tool-chip">HSE Management</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CASE 03: SYDNEY OPERA HOUSE ─── -->
+<div class="case-block rv">
+  <div class="cb-head">
+    <div class="cb-num" style="color:rgba(167,139,250,.1)">03</div>
+    <div class="cb-meta">
+      <div class="cb-sector" style="color:var(--c)">Iconic Architecture · Australia</div>
+      <div class="cb-name">Sydney Opera House</div>
+      <div class="cb-sub">1959–1973 · AUD$102M · The most famous PM failure turned icon</div>
+    </div>
+    <div class="cb-status">
+      <span class="tag tag-d">OVER BUDGET 1,457%</span>
+      <span class="tag tag-b">6-YEAR DELAY</span>
+      <span class="tag tag-c">UNESCO HERITAGE</span>
+    </div>
+  </div>
+  <div class="cb-body">
+    <div class="cb-col">
+      <div class="cb-col-title">Background & Scope</div>
+      <div class="cb-text">Commissioned in 1957, the Sydney Opera House was originally budgeted at <strong>AUD$7M</strong> with a 1963 completion date. It finally opened in 1973 at a cost of <strong>AUD$102M</strong> — a 1,457% cost overrun — and is now a UNESCO World Heritage Site.<br><br>The project is the most famous example of the <strong>planning fallacy</strong> in construction history. It proceeded to construction before the design was complete, leading to constant rework, structural challenges with the iconic shell roof, and political controversy that led to the architect Jørn Utzon resigning in 1966.</div>
+    </div>
+    <div class="cb-col">
+      <div class="cb-col-title">PM Failures & Analysis</div>
+      <div class="cb-text"><strong>1. Construction Before Design Completion:</strong> Political pressure forced construction to begin before structural solutions for the roof shells were finalized. This led to massive rework.<br><br><strong>2. Optimism Bias:</strong> The 7M estimate ignored complexity and unknowns — a classic planning fallacy.<br><br><strong>3. Stakeholder Conflict:</strong> The NSW government's interference led to the architect's resignation, causing design continuity loss.<br><br><strong>4. No Change Control:</strong> Design changes were made without formal impact assessment on cost or schedule.</div>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">1,457%</div><div class="kpi-lbl">Cost Overrun</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">AUD$102M</div><div class="kpi-lbl">Final Cost</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">6 Years</div><div class="kpi-lbl">Behind Schedule</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--c)">1973</div><div class="kpi-lbl">Completion</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">2003</div><div class="kpi-lbl">UNESCO Heritage</div></div>
+  </div>
+  <div class="lessons">
+    <div class="lessons-title">Key Lessons Learned</div>
+    <div class="lesson-list">
+      <span class="lesson">Never start construction without complete design</span>
+      <span class="lesson">Avoid optimism bias in estimating</span>
+      <span class="lesson">Protect design integrity from politics</span>
+      <span class="lesson">Formal change control is mandatory</span>
+      <span class="lesson">Reference class forecasting</span>
+      <span class="lesson">Stakeholder management plan</span>
+    </div>
+    <div class="tools-row">
+      <span class="tool-chip">Reference Class Forecasting</span>
+      <span class="tool-chip">Change Control Board</span>
+      <span class="tool-chip">Stakeholder Matrix</span>
+      <span class="tool-chip">Risk Register</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CASE 04: DUBAI METRO ─── -->
+<div class="case-block rv">
+  <div class="cb-head">
+    <div class="cb-num" style="color:rgba(244,145,74,.1)">04</div>
+    <div class="cb-meta">
+      <div class="cb-sector" style="color:var(--b)">Urban Transit · UAE</div>
+      <div class="cb-name">Dubai Metro — Red & Green Lines</div>
+      <div class="cb-sub">2005–2011 · $7.6B · Delivered ON TIME for Expo 2020 legacy</div>
+    </div>
+    <div class="cb-status">
+      <span class="tag tag-a">ON TIME</span>
+      <span class="tag tag-a">WITHIN BUDGET</span>
+      <span class="tag tag-b">RECORD SPEED</span>
+    </div>
+  </div>
+  <div class="cb-body">
+    <div class="cb-col">
+      <div class="cb-col-title">Background & Scope</div>
+      <div class="cb-text">The Dubai Metro Red Line — <strong>52.1km</strong> with 29 stations — was built in just <strong>under 4 years</strong> in one of the world's fastest-growing cities. It was the world's longest fully automated metro line at opening in 2009. The project was delivered by a consortium led by Mitsubishi-Obayashi under an EPC contract worth <strong>$7.6B</strong>.<br><br>Construction ran 24/7 in extreme desert heat conditions (50°C+). The project involved viaduct sections, underground tunnels, depots, and a fully integrated SCADA control system with driverless operation.</div>
+    </div>
+    <div class="cb-col">
+      <div class="cb-col-title">Success Factors</div>
+      <div class="cb-text"><strong>1. Strong Political Will:</strong> RTA (Roads & Transport Authority) acted as a decisive client with a clear mandate and unified decision chain.<br><br><strong>2. EPC Structure:</strong> Single EPC contractor responsible for design, procurement, and construction — eliminating interface management risk.<br><br><strong>3. 24/7 Construction:</strong> Three shifts with aggressive scheduling, supported by a massive workforce of 30,000+ at peak.<br><br><strong>4. Early Planning:</strong> All land acquisition, utility diversions, and design were completed before major works began — rare discipline in mega-projects.</div>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">52.1km</div><div class="kpi-lbl">Red Line Length</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">$7.6B</div><div class="kpi-lbl">EPC Value</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">&lt;4 Years</div><div class="kpi-lbl">Delivery Time</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">30,000+</div><div class="kpi-lbl">Peak Workforce</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">ON TIME</div><div class="kpi-lbl">Delivery</div></div>
+  </div>
+  <div class="lessons">
+    <div class="lessons-title">Key Lessons Learned</div>
+    <div class="lesson-list">
+      <span class="lesson">EPC contracts reduce interface risk</span>
+      <span class="lesson">Complete pre-construction work first</span>
+      <span class="lesson">Strong client governance accelerates decisions</span>
+      <span class="lesson">24/7 scheduling requires robust logistics</span>
+      <span class="lesson">Early utility diversion planning</span>
+      <span class="lesson">Unified workforce mobilization</span>
+    </div>
+    <div class="tools-row">
+      <span class="tool-chip">EPC Contract</span>
+      <span class="tool-chip">Critical Path Method</span>
+      <span class="tool-chip">Resource-Loaded Schedule</span>
+      <span class="tool-chip">SCADA Integration</span>
+      <span class="tool-chip">Primavera P6</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CASE 05: BOSTON BIG DIG ─── -->
+<div class="case-block rv">
+  <div class="cb-head">
+    <div class="cb-num" style="color:rgba(96,212,255,.1)">05</div>
+    <div class="cb-meta">
+      <div class="cb-sector" style="color:var(--e)">Highway Infrastructure · USA</div>
+      <div class="cb-name">Boston Big Dig — Central Artery/Tunnel</div>
+      <div class="cb-sub">1982–2007 · $24.3B · Largest highway project in US history</div>
+    </div>
+    <div class="cb-status">
+      <span class="tag tag-d">190% OVERRUN</span>
+      <span class="tag tag-b">8-YEAR DELAY</span>
+      <span class="tag tag-e">URBAN SUCCESS</span>
+    </div>
+  </div>
+  <div class="cb-body">
+    <div class="cb-col">
+      <div class="cb-col-title">Background & Scope</div>
+      <div class="cb-text">The Big Dig relocated Interstate 93 underground through the heart of downtown Boston, replacing a deteriorating elevated highway. The project included a <strong>3.5-mile tunnel</strong>, the Ted Williams Tunnel, the Leverett Circle Connector Bridge, and the iconic <strong>Leonard P. Zakim Bridge</strong>.<br><br>Originally estimated at <strong>$2.6B</strong>, the final cost reached <strong>$24.3B</strong>, making it the most expensive highway project in US history. Construction occurred 24/7 in a dense urban environment while keeping existing highways operational — an unprecedented engineering challenge.</div>
+    </div>
+    <div class="cb-col">
+      <div class="cb-col-title">Why It Overran — PM Analysis</div>
+      <div class="cb-text"><strong>1. Scope Changes:</strong> Major design changes were made after approvals. The tunnel depth was increased, adding billions in cost.<br><br><strong>2. Political & Community Pressure:</strong> Mitigation measures for noise, vibration, and disruption added significant unplanned costs.<br><br><strong>3. Contractor Fraud:</strong> Concrete supplier provided substandard materials — a quality control failure with fatal consequences (ceiling collapse, 2006).<br><br><strong>4. Utility Conflicts:</strong> 30,000+ utilities had to be relocated — discovered during construction, not pre-planned.</div>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">$24.3B</div><div class="kpi-lbl">Final Cost</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">190%</div><div class="kpi-lbl">Cost Overrun</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--d)">8 Years</div><div class="kpi-lbl">Delay</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--b)">30,000+</div><div class="kpi-lbl">Utilities Relocated</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--e)">27 acres</div><div class="kpi-lbl">New Green Space</div></div>
+  </div>
+  <div class="lessons">
+    <div class="lessons-title">Key Lessons Learned</div>
+    <div class="lesson-list">
+      <span class="lesson">Utility survey before design freeze</span>
+      <span class="lesson">Rigorous QC on all materials</span>
+      <span class="lesson">Freeze scope before construction approval</span>
+      <span class="lesson">Political risk is a real project risk</span>
+      <span class="lesson">Independent quality audits</span>
+      <span class="lesson">Contingency for urban complexity</span>
+    </div>
+    <div class="tools-row">
+      <span class="tool-chip">Ground Penetrating Radar</span>
+      <span class="tool-chip">Quality Audit</span>
+      <span class="tool-chip">Risk Register</span>
+      <span class="tool-chip">Change Control</span>
+      <span class="tool-chip">Stakeholder Management</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CASE 06: TOKYO SKYTREE ─── -->
+<div class="case-block rv">
+  <div class="cb-head">
+    <div class="cb-num" style="color:rgba(74,244,200,.1)">06</div>
+    <div class="cb-meta">
+      <div class="cb-sector" style="color:var(--a)">Supertall Tower · Japan</div>
+      <div class="cb-name">Tokyo Skytree</div>
+      <div class="cb-sub">2008–2012 · ¥65B · World's tallest tower — on time, on budget</div>
+    </div>
+    <div class="cb-status">
+      <span class="tag tag-a">ON TIME</span>
+      <span class="tag tag-a">ON BUDGET</span>
+      <span class="tag tag-a">ZERO ACCIDENTS</span>
+    </div>
+  </div>
+  <div class="cb-body">
+    <div class="cb-col">
+      <div class="cb-col-title">Background & Scope</div>
+      <div class="cb-text">At <strong>634 meters</strong>, Tokyo Skytree is the world's tallest tower and second tallest structure. Built in a dense urban environment above active rail lines in Oshiage, Tokyo. Completed in 4 years, on budget at <strong>¥65B (~$650M)</strong>.<br><br>The tower features a unique <strong>tripod base</strong> transitioning to a cylindrical upper section — designed to survive major earthquakes. A central concrete shaft with viscous dampers provides seismic isolation. The project was managed under <strong>Japanese Genba (field-first) philosophy</strong> with extreme precision and lean construction principles.</div>
+    </div>
+    <div class="cb-col">
+      <div class="cb-col-title">PM Success Factors</div>
+      <div class="cb-text"><strong>1. Kaizen Culture:</strong> Continuous improvement embedded in daily site operations. Daily stand-up meetings at every level of the workforce.<br><br><strong>2. Modular Prefabrication:</strong> Steel components were fabricated off-site to exact tolerances, minimizing on-site time and error.<br><br><strong>3. Seismic Engineering Integration:</strong> Structural engineering and construction planning were jointly managed — no design/build separation.<br><br><strong>4. Zero-Accident Target:</strong> HSE was a non-negotiable KPI. Every near-miss was reported and addressed within 24 hours.</div>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">634m</div><div class="kpi-lbl">Height</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">¥65B</div><div class="kpi-lbl">Budget Met</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">4 Years</div><div class="kpi-lbl">On Schedule</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">Zero</div><div class="kpi-lbl">Fatal Accidents</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--a)">2,000+</div><div class="kpi-lbl">Peak Workers</div></div>
+  </div>
+  <div class="lessons">
+    <div class="lessons-title">Key Lessons Learned</div>
+    <div class="lesson-list">
+      <span class="lesson">Kaizen drives continuous field improvement</span>
+      <span class="lesson">Prefabrication reduces on-site error</span>
+      <span class="lesson">Integrate engineering and construction planning</span>
+      <span class="lesson">HSE as a non-negotiable KPI</span>
+      <span class="lesson">Daily standups at all workforce levels</span>
+      <span class="lesson">Genba (go-see-solve) culture</span>
+    </div>
+    <div class="tools-row">
+      <span class="tool-chip">Lean Construction</span>
+      <span class="tool-chip">Last Planner System</span>
+      <span class="tool-chip">Kaizen</span>
+      <span class="tool-chip">Prefabrication</span>
+      <span class="tool-chip">HSE KPI Dashboard</span>
+    </div>
+  </div>
+</div>
+
+    </div><!-- /case-wrap -->
+  </div>
+</section>
+
+<!-- FRAMEWORKS -->
+<section id="frameworks">
+  <div class="sw">
+    <div class="s-tag rv">03 — Frameworks</div>
+    <h2 class="s-title rv">PM <span class="cc">Frameworks</span> Applied</h2>
+    <div class="fw-grid">
+      <div class="fw-card rv" style="--fw-bg:rgba(74,244,200,.04);--fw-c:var(--a)">
+        <div class="fw-name">PMBOK Guide</div>
+        <div class="fw-full">Project Management Body of Knowledge</div>
+        <div class="fw-desc">PMI's global standard covering 5 process groups and 10 knowledge areas. Used in Big Dig, Dubai Metro, and Crossrail for integration, scope, schedule, and cost management.</div>
+        <div class="fw-tags"><span class="tag tag-a">Waterfall</span><span class="tag tag-a">Construction</span><span class="tag tag-a">Infrastructure</span></div>
+      </div>
+      <div class="fw-card rv d1" style="--fw-bg:rgba(167,139,250,.04);--fw-c:var(--c)">
+        <div class="fw-name">PRINCE2</div>
+        <div class="fw-full">Projects in Controlled Environments</div>
+        <div class="fw-desc">UK government standard with strong governance, stage gates, and business case focus. Used heavily in Crossrail and HS2. Emphasizes clear roles, responsibilities, and phase-gate reviews.</div>
+        <div class="fw-tags"><span class="tag tag-c">Governance</span><span class="tag tag-c">UK Standard</span><span class="tag tag-c">Stage Gates</span></div>
+      </div>
+      <div class="fw-card rv d2" style="--fw-bg:rgba(244,145,74,.04);--fw-c:var(--b)">
+        <div class="fw-name">NEC3 / NEC4</div>
+        <div class="fw-full">New Engineering Contract</div>
+        <div class="fw-desc">Collaborative contract form used in Crossrail. Features early warning mechanisms, compensation events, and pain/gain sharing. Promotes collaborative PM rather than adversarial contracting.</div>
+        <div class="fw-tags"><span class="tag tag-b">Collaborative</span><span class="tag tag-b">Risk Sharing</span><span class="tag tag-b">Early Warning</span></div>
+      </div>
+      <div class="fw-card rv" style="--fw-bg:rgba(96,212,255,.04);--fw-c:var(--e)">
+        <div class="fw-name">Agile / Scrum</div>
+        <div class="fw-full">Iterative Project Delivery</div>
+        <div class="fw-desc">Applied in technology components of mega-projects (SCADA, BIM, passenger apps). Sprints, daily standups, and retrospectives improve speed and adaptability in complex system delivery.</div>
+        <div class="fw-tags"><span class="tag tag-e">Iterative</span><span class="tag tag-e">Technology</span><span class="tag tag-e">Sprints</span></div>
+      </div>
+      <div class="fw-card rv d1" style="--fw-bg:rgba(74,244,200,.04);--fw-c:var(--a)">
+        <div class="fw-name">Lean Construction</div>
+        <div class="fw-full">Last Planner System & Kaizen</div>
+        <div class="fw-desc">Applied in Tokyo Skytree and modern construction. Eliminates waste, uses pull planning through the Last Planner System, and drives continuous improvement through daily kaizen culture.</div>
+        <div class="fw-tags"><span class="tag tag-a">Lean</span><span class="tag tag-a">Last Planner</span><span class="tag tag-a">Kaizen</span></div>
+      </div>
+      <div class="fw-card rv d2" style="--fw-bg:rgba(240,108,108,.04);--fw-c:var(--d)">
+        <div class="fw-name">EVM — Earned Value</div>
+        <div class="fw-full">Earned Value Management</div>
+        <div class="fw-desc">Integrates scope, schedule, and cost into a single performance measurement system. SPI, CPI, TCPI metrics allow early identification of trends before they become critical issues.</div>
+        <div class="fw-tags"><span class="tag tag-d">Cost Control</span><span class="tag tag-d">Schedule</span><span class="tag tag-d">Forecasting</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section id="metrics">
+  <div class="sw">
+    <div class="s-tag rv">04 — KPIs</div>
+    <h2 class="s-title rv">Project <span class="ca">Metrics</span> & Formulas</h2>
+    <div class="metrics-grid">
+      <div class="metric-block rv">
+        <div class="mb-title">Schedule Performance</div>
+        <div class="mb-row"><span class="mb-label">Dubai Metro (on-time)</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="1"></div></div><span class="mb-val">SPI=1.0</span></div>
+        <div class="mb-row"><span class="mb-label">Tokyo Skytree</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="0.98"></div></div><span class="mb-val">SPI≈1.0</span></div>
+        <div class="mb-row"><span class="mb-label">Crossrail</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="0.72" style="background:linear-gradient(90deg,var(--b),var(--d))"></div></div><span class="mb-val">SPI=0.7</span></div>
+        <div class="mb-row"><span class="mb-label">Berlin Airport</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="0.25" style="background:linear-gradient(90deg,var(--d),#800)"></div></div><span class="mb-val">SPI=0.25</span></div>
+        <div class="formula-wrap">
+          <div class="formula">
+            <span class="var">SPI</span> <span class="op">=</span> <span class="var">EV</span> <span class="op">/</span> <span class="var">PV</span><br>
+            <span class="op">If SPI</span> <span class="val">&gt; 1.0</span> <span class="op">→ ahead of schedule</span><br>
+            <span class="op">If SPI</span> <span class="val">&lt; 1.0</span> <span class="op">→ behind schedule</span>
+          </div>
+        </div>
+      </div>
+      <div class="metric-block rv d1">
+        <div class="mb-title">Cost Performance Index</div>
+        <div class="mb-row"><span class="mb-label">Dubai Metro</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="0.95"></div></div><span class="mb-val">CPI≈1.0</span></div>
+        <div class="mb-row"><span class="mb-label">Tokyo Skytree</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="1"></div></div><span class="mb-val">CPI=1.0</span></div>
+        <div class="mb-row"><span class="mb-label">Crossrail</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="0.6" style="background:linear-gradient(90deg,var(--b),var(--d))"></div></div><span class="mb-val">CPI=0.6</span></div>
+        <div class="mb-row"><span class="mb-label">Sydney Opera House</span><div class="mb-bar-wrap"><div class="mb-bar" data-w="0.07" style="background:linear-gradient(90deg,var(--d),#800)"></div></div><span class="mb-val">CPI=0.07</span></div>
+        <div class="formula-wrap">
+          <div class="formula">
+            <span class="var">CPI</span> <span class="op">=</span> <span class="var">EV</span> <span class="op">/</span> <span class="var">AC</span><br>
+            <span class="op">EAC</span> <span class="op">=</span> <span class="var">BAC</span> <span class="op">/</span> <span class="var">CPI</span><br>
+            <span class="op">VAC</span> <span class="op">=</span> <span class="var">BAC</span> <span class="op">-</span> <span class="var">EAC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary" style="background:var(--ink3);">
+  <div class="sw">
+    <div class="s-tag rv">05 — Glossary</div>
+    <h2 class="s-title rv">PM <span class="cb">Terminology</span></h2>
+    <div class="gl-grid">
+      <div class="gl-card rv"><div class="gl-abbr">EVM</div><div class="gl-name">Earned Value Management</div><div class="gl-def">Integrates scope, schedule, and cost to measure project performance and forecast completion.</div></div>
+      <div class="gl-card rv d1"><div class="gl-abbr">WBS</div><div class="gl-name">Work Breakdown Structure</div><div class="gl-def">Hierarchical decomposition of project scope into deliverables and work packages.</div></div>
+      <div class="gl-card rv d2"><div class="gl-abbr">CPM</div><div class="gl-name">Critical Path Method</div><div class="gl-def">Identifies the longest sequence of dependent tasks to determine minimum project duration.</div></div>
+      <div class="gl-card rv d3"><div class="gl-abbr">RFI</div><div class="gl-name">Request for Information</div><div class="gl-def">Formal document raised by contractor to resolve design ambiguities or missing information.</div></div>
+      <div class="gl-card rv"><div class="gl-abbr">NCR</div><div class="gl-name">Non-Conformance Report</div><div class="gl-def">Records work or materials that do not meet specification, triggering corrective action.</div></div>
+      <div class="gl-card rv d1"><div class="gl-abbr">ITP</div><div class="gl-name">Inspection & Test Plan</div><div class="gl-def">Documents what inspections and tests are required, by whom, and at which hold/witness points.</div></div>
+      <div class="gl-card rv d2"><div class="gl-abbr">RACI</div><div class="gl-name">Responsibility Matrix</div><div class="gl-def">Defines who is Responsible, Accountable, Consulted, and Informed for each project activity.</div></div>
+      <div class="gl-card rv d3"><div class="gl-abbr">KPI</div><div class="gl-name">Key Performance Indicator</div><div class="gl-def">Measurable metric tracking project performance against objectives: cost, schedule, quality, safety.</div></div>
+      <div class="gl-card rv"><div class="gl-abbr">EPC</div><div class="gl-name">Engineering Procurement Construction</div><div class="gl-def">Single contract where one entity is responsible for complete design, procurement, and construction.</div></div>
+      <div class="gl-card rv d1"><div class="gl-abbr">BIM</div><div class="gl-name">Building Information Modeling</div><div class="gl-def">Digital representation of a built asset integrating 3D geometry, data, and project lifecycle information.</div></div>
+      <div class="gl-card rv d2"><div class="gl-abbr">SPI</div><div class="gl-name">Schedule Performance Index</div><div class="gl-def">EV/PV ratio measuring schedule efficiency. Below 1.0 indicates schedule delay.</div></div>
+      <div class="gl-card rv d3"><div class="gl-abbr">CPI</div><div class="gl-name">Cost Performance Index</div><div class="gl-def">EV/AC ratio measuring cost efficiency. Below 1.0 indicates cost overrun in progress.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner">
+    <span class="cta-mono">// PM STUDY CASES — OPEN SOURCE</span>
+    <h2 class="cta-title">Learn from<br>Real Projects</h2>
+    <p class="cta-sub">Explore more cases · Contribute · Fork on GitHub</p>
+    <div class="cta-links">
+      <a class="cta-btn primary" href="https://github.com" target="_blank">⭐ Star on GitHub</a>
+      <a class="cta-btn sec" href="https://www.researchgate.net/profile/Elvin-Asgar/research" target="_blank">📄 Research Papers</a>
+      <a class="cta-btn sec" href="https://chat.whatsapp.com/JS7XVLh8v2I4HPLLshwTr2" target="_blank">👷 IndustrCons</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-brand">PM STUDY CASES · v1.0</div>
+  <div class="f-note">Project Management Intelligence — Open Knowledge</div>
+  <div class="f-links">
+    <a href="#cases">Cases</a>
+    <a href="#frameworks">Frameworks</a>
+    <a href="#glossary">Glossary</a>
+  </div>
+</footer>
+
+<script>
+/* Cursor */
+const csr=document.getElementById('csr'),ring=document.getElementById('csr-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;csr.style.left=mx+'px';csr.style.top=my+'px';});
+(function tick(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick);})();
+
+/* Hero canvas — floating data particles */
+const cv=document.getElementById('hero-cv'),c=cv.getContext('2d');
+let W,H,t=0;
+const pts=[];
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+for(let i=0;i<60;i++) pts.push({x:Math.random()*1800-200,y:Math.random()*900,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.15,s:Math.random()*.8+.3,col:['#4af4c8','#a78bfa','#f4914a','rgba(255,255,255,.4)'][Math.floor(Math.random()*4)]});
+
+function draw(){
+  c.clearRect(0,0,W,H);t+=.005;
+  /* grid */
+  c.strokeStyle='rgba(74,244,200,0.04)';c.lineWidth=.5;
+  for(let x=0;x<W;x+=64){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke();}
+  for(let y=0;y<H;y+=64){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+  /* connections */
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+    if(d<130){c.globalAlpha=(1-d/130)*.2;c.strokeStyle='#4af4c8';c.lineWidth=.5;c.beginPath();c.moveTo(pts[i].x,pts[i].y);c.lineTo(pts[j].x,pts[j].y);c.stroke();}
+  }
+  c.globalAlpha=1;
+  /* nodes */
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<-50)p.x=W+20;if(p.x>W+50)p.x=-20;
+    if(p.y<-50)p.y=H+20;if(p.y>H+50)p.y=-20;
+    c.globalAlpha=.4+.3*Math.sin(t+p.x*.02);
+    c.fillStyle=p.col;c.beginPath();c.arc(p.x,p.y,p.s,0,Math.PI*2);c.fill();
+  });
+  c.globalAlpha=1;
+  /* EVM-like graph lines */
+  c.strokeStyle='rgba(74,244,200,0.07)';c.lineWidth=1;
+  c.beginPath();
+  for(let x=0;x<W;x+=3){const y=H*.6+Math.sin(x*.008+t)*.1*H+Math.sin(x*.02+t*.5)*.05*H;if(x===0)c.moveTo(x,y);else c.lineTo(x,y);}
+  c.stroke();
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* Reveal */
+const rvEls=document.querySelectorAll('.rv');
+new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.08,rootMargin:'0px 0px -30px 0px'}).observe.apply(null,rvEls);
+const ro=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+rvEls.forEach(r=>ro.observe(r));
+
+/* Metric bars */
+const barObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.mb-bar').forEach(b=>{b.style.transform=`scaleX(${b.getAttribute('data-w')||'.8'})`;b.classList.add('on');});}});
+},{threshold:.3});
+document.querySelectorAll('.metric-block').forEach(m=>barObs.observe(m));
+</script>
+</body>
+</html>
